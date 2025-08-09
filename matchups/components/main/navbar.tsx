@@ -9,9 +9,9 @@ interface NavLink {
 }
 
 const NAV_LINKS: NavLink[] = [
-  { title: 'About', link: '#about-me' },
-  { title: 'Features', link: '#features' },
-  { title: 'API Viewer', link: '#api' },
+  { title: 'About', link: 'https://github.com/gitforfabianv/SportsMatchup/blob/main/README.md' },
+  { title: 'Feature Requests', link: 'https://github.com/gitforfabianv/SportsMatchup/issues' },
+  { title: 'Donate', link: '#donate' },
 ];
 
 // Navbar props interface
