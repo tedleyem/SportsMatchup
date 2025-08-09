@@ -48,41 +48,44 @@ const teams2 = [
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center">
-      <div className="flex flex-row justify-evenly items-center w-full h-64">
-        <div className="w-[20%] h-[60%] bg-white border border-gray-300">
-          <TeamSelect
-            label="Team A"
-            value={teamA}
-            onChange={setTeamA}
-            options={teams2}
-          />
-        </div>
+    <div
+    className="w-full h-full flex flex-col justify-center items-center"
+    style={{ backgroundImage: `url("")`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+  >
+    <div className="flex flex-row justify-evenly items-center w-full h-64">
+      <div className="w-[20%] h-[60%] bg-transparent border border-gray-300">
+        <TeamSelect
+          label="Team A"
+          value={teamA}
+          onChange={setTeamA}
+          options={teams2}
+        />
+      </div>
 
         <div className="flex flex-col justify-center items-center text-gray-800">
-          <h2 className="text-center text-lg">VS</h2>
-          <button
-            onClick={handleSubmit}
-            disabled={!teamA || !teamB}
-            className={`px-6 py-2 rounded-lg font-semibold transition ${
-              teamA && teamB
-                ? "bg-blue-600 text-white hover:bg-blue-700"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            Submit
-          </button>
-        </div>
-
-        <div className="w-[20%] h-[60%] bg-white border border-gray-300">
-          <TeamSelect
-            label="Team B"
-            value={teamB}
-            onChange={setTeamB}
-            options={teams2}
-          />
-        </div>
+        <h2 className="text-center text-lg">VS</h2>
+        <button
+          onClick={handleSubmit}
+          disabled={!teamA || !teamB}
+          className={`px-6 py-2 rounded-lg font-semibold transition ${
+            teamA && teamB
+              ? "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
+        >
+          Submit
+        </button>
       </div>
+
+      <div className="w-[20%] h-[60%] bg-transparent border border-gray-300">
+        <TeamSelect
+          label="Team B"
+          value={teamB}
+          onChange={setTeamB}
+          options={teams2}
+        />
+      </div>
+    </div>
 
       {submitted && (
         <div className="w-full flex justify-center">
@@ -92,7 +95,7 @@ const teams2 = [
               team2Image={teams2.find((team) => team.id === teamB)?.image || "/images/default.png"}
               team1Name={teams2.find((team) => team.id === teamA)?.name || "Team A"}
               team2Name={teams2.find((team) => team.id === teamB)?.name || "Team B"}
-              record="Team 1 leads 12–8"
+              record={`${teams2.find((team) => team.id === teamA)?.name || "Team A"} vs ${teams2.find((team) => team.id === teamB)?.name || "Team B"}`}
               statLabels={["PPG", "RPG", "APG", "3P%"]}
               headToHeadTeam1Stats={["101.4", "45.2", "24.1", "36.1%"]}
               headToHeadTeam2Stats={["98.7", "43.5", "22.8", "38.6%"]}
