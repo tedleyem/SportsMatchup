@@ -10,9 +10,9 @@
     "pages": "next build"
   },
   "author": {
-    "name": "Techdadteddy & Syntvx Bytez",
-    "email": "@techdadteddy and @syntvxbytez",
-    "url": "https://gitlab.com/show-me-what-you-got/sports-matchups/"
+    "name": "Techdadteddy & gitforfabianv",
+    "email": "@techdadteddy and gitforfabianv",
+    "url": "https://github.com/gitforfabianv/SportsMatchup"
   },
   "description": "NBA Team Matchups App",
   "keywords": [
@@ -49,11 +49,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/show-me-what-you-got/sports-matchupsit"
+    "url": "https://github.com/gitforfabianv/SportsMatchupit"
   },
-  "homepage": "https://gitlab.com/show-me-what-you-got/sports-matchups#readme",
+  "homepage": "https://github.com/gitforfabianv/SportsMatchup#readme",
   "bugs": {
-    "url": "https://gitlab.com/show-me-what-you-got/sports-matchups/issues",
+    "url": "https://github.com/gitforfabianv/SportsMatchupissues",
     "email": ""
   },
   "funding": [

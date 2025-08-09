@@ -107,7 +107,7 @@ export const SOCIALS = [
   {
     name: "GitLab",
     icon: FaGitlab,
-    link: "https://gitlab.com/show-me-what-you-got/sports-matchups",
+    link: "https://github.com/gitforfabianv/SportsMatchup",
   },
 ] as const;
 
