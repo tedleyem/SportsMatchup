@@ -1,82 +1,28 @@
-version: '3'
-
 services:
-  app:
-    image: 'lepresidente/nginxproxymanager:latest'
-    restart: unless-stopped
-    networks:
-      crowdsec:
-      npm:
+  web:
+    build: .
     ports:
-      # These ports are in format :
-      - '80:80' # Public HTTP Port
-      - '443:443' # Public HTTPS Port
-      - '81:81' # Admin Web Port
-    environment:
-      DB_MYSQL_HOST: "db"
-      DB_MYSQL_PORT: 3306
-      DB_MYSQL_USER: "npm"
-      DB_MYSQL_PASSWORD: ${DATABASE_PASSWORD}
-      DB_MYSQL_NAME: "npm"
-      CROWDSEC_OPENRESTY_BOUNCER: |
-        ENABLED=true
-        API_URL=http://crowdsec:8080
-        API_KEY=${CROWDSEC_BOUNCER_APIKEY}
-      # Uncomment this if IPv6 is not enabled on your host
-      # DISABLE_IPV6: 'true'
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - "3000:3000"
     depends_on:
-      db:
-        condition: service_healthy
-    security_opt:
-      - no-new-privileges=true
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=matchups
 
   db:
-    image: 'mariadb:lts'
-    restart: unless-stopped
-    networks:
-      npm:
+    image: postgres:15
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${ROOT_DATABASE_PASSWORD}
-      MYSQL_DATABASE: 'npm'
-      MYSQL_USER: 'npm'
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
     volumes:
-      - mariadb-data:/var/lib/mysql
-    security_opt:
-      - no-new-privileges=true
-    healthcheck:
-      test: ['CMD', '/usr/local/bin/healthcheck.sh', '--innodb_initialized']
-      start_period: 5s
-      timeout: 5s
-      interval: 5s
-      retries: 5
-
-  crowdsec:
-    image: docker.io/crowdsecurity/crowdsec:latest
-    container_name: crowdsec
-    environment:
-      - COLLECTIONS=crowdsecurity/nginx-proxy-manager
-    volumes:
-      - crowdsec-db:/var/lib/crowdsec/data/
-      - crowdsec-config:/etc/crowdsec/
-      - ./crowdsec/acquis.yaml:/etc/crowdsec/acquis.yaml
-      - ./data/logs/:/var/log/npm:ro
-    networks:
-      crowdsec:
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges=true
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
-  crowdsec-db:
-  crowdsec-config:
-  mariadb-data:
-
-networks:
-  crowdsec:
-    driver: bridge
-  npm:
-    driver: bridge
+  pgdata:
