@@ -12,6 +12,7 @@ const NAV_LINKS: NavLink[] = [
   { title: 'About', link: 'https://github.com/gitforfabianv/SportsMatchup/blob/main/README.md' },
   { title: 'Feature Requests', link: 'https://github.com/gitforfabianv/SportsMatchup/issues' },
   { title: 'Donate', link: '#donate' },
+  { title: 'API', link: '/test' },
 ];
 
 // Navbar props interface

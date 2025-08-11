@@ -1,7 +1,7 @@
 // components/AppShell.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "../components/main/navbar";
 import { Footer } from "../components/main/footer";
 // import { BasketballCanvas } from "../components/main/basketballBackground";
