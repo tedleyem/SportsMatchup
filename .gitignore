@@ -137,3 +137,13 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# A container for liquids
+.idea/
+.vscode/
+__pycache__/
+dist/
+.coverage*
+htmlcov/
+.tox/
+docs/_build/
