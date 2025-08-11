@@ -2,6 +2,7 @@
   "name": "nba-team-matchups",
   "version": "1.0.1",
   "private": true,
+  "proxy": "https://localhost:5000",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
