@@ -1,28 +1,19 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: web
     ports:
       - "3000:3000"
-    depends_on:
-      - db
-    environment:
-      - DB_HOST=db
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASSWORD=postgres
-      - DB_NAME=matchups
 
-  db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: mydatabase
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: api
     ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
+      - "5000:5000"
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
