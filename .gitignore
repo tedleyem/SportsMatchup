@@ -153,3 +153,4 @@ docs/_build/
 .env
 frontend/.env
 backend/.env
+backend/.env
