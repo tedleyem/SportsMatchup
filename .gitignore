@@ -147,3 +147,9 @@ dist/
 htmlcov/
 .tox/
 docs/_build/
+
+
+# .env files 
+.env
+#backend/.env
+#frontend/.env
