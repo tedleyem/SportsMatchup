@@ -4,9 +4,11 @@ Compare any two NBA teams and get detailed head-to-head statistics, including wi
 
 ## Tech Stack
 
-- Next.js 14.2.15 (frontend)
+- Node 20.19.2 (frontend)
+- Vite 7.1.2
+- React 19.1.1
 - Python 3.13 (backend)
-- docker
+- Docker
 
 ---
 
