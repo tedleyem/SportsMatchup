@@ -151,5 +151,5 @@ docs/_build/
 
 # .env files 
 .env
-#backend/.env
-#frontend/.env
+backend/.env
+frontend/.env
