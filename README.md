@@ -18,45 +18,9 @@ Email: contactNBAmatchups@gmail.com
 IG: @theNBAmatchups
 X: @theNBAmatchups
 
-### Using npm (Without Docker)
-
-```bash
-# Move to matchups dir
-cd matchups
-
-# Install dependencies
-npm install
-
-# Run tests
-npm test
-
-# Run the app locally
-npm run dev
-
-# Backend Setup (be sure to have Python 3.13 installed)
-# Move to backend dir 
-cd backend 
-
-# Activate virtual environment 
-source venv/bin/activate 
-
-# Install Flask and other requirements 
-pip3 install -r requirements.txt 
-
-# Run flask locally 
-flask run --host=0.0.0.0 --port=5000"
-```
-
-### Using Docker Compose
-Make sure Docker and Docker Compose are installed.
-
-```bash
-# Build and start the app with Docker Compose
-docker-compose up --build -d
-
-# To stop the app
-docker-compose down
-```
+---
+# Resources 
+Check the docs folder for a list of how-to's and developmment resources. 
 
 
 # Test API Endpoints 
