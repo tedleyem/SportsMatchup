@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+html {
+  height: 100svh;
+  width: 100svw;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  align-content: center;
+  align-items: center;
+}
+
+body {
+  height: 100svh;
+  width: 100svw;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  align-content: center;
+  align-items: center;
+}
+
+#root {
+  height: 100svh;
+  width: 100svw;
+  display: flex;
+  justify-content: center;
+  justify-items: center;
+  align-content: center;
+  align-items: center;
+}
