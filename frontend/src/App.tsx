@@ -8,7 +8,7 @@ function App() {
   const [showApi, setShowApi] = useState(false);
 
   return (
-    <div className="w-full h-full flex flex-col justify-content-center items-center">
+    <div className="w-full h-full flex flex-col justify-content-center items-center bg-black">
       <Navbar showApi={showApi} setShowApi={setShowApi} />
       <Versus />
       <Footer />
