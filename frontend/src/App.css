@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 html {
   height: 100svh;
   width: 100svw;
@@ -14,6 +13,7 @@ body {
   height: 100svh;
   width: 100svw;
   display: flex;
+  overflow: hidden;
   justify-content: center;
   justify-items: center;
   align-content: center;
@@ -24,6 +24,8 @@ body {
   height: 100svh;
   width: 100svw;
   display: flex;
+  overflow: hidden;
+  flex-direction: column;
   justify-content: center;
   justify-items: center;
   align-content: center;
