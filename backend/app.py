@@ -1,5 +1,4 @@
-from flask import Flask, jsonify, render_template_string
-import http.client
+from flask import Flask, jsonify, render_template_string, request
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -61,10 +60,9 @@ template = """
     <pre>{{ neo_art }}</pre>
     <p>Just take the blue pill</p>
     <div class="links">
-        <a href="/api/teams">API TEAMS</a>
-        <a href="/api/games">MATCHUPS</a>
+        <a href="/api/teams">TEAMS</a>
         <a href="/api/standings">STANDINGS</a>
-        <a href="/api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves">TEST</a>
+        <a href="/api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves">MATCHUPS TEST</a>
     </div>
 </body>
 </html>
@@ -115,13 +113,54 @@ def get_nba_teams():
 
 @app.route("/api/standings", methods=["GET"])
 def get_standings():
-    conn = http.client.HTTPSConnection("PUBLIC_RAPIDAPI_HOST")
-    conn.request("GET", "/standings?league=standard&season=2024", headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    return jsonify(json.loads(data.decode("utf-8")))
+    """
+    API Endpoint to retrieve 2024-2025 NBA standings from landofbasketball.com.
+    Returns Team, W, L, Pct, GB, Streak, and Last 10 Games for each team.
+    """
+    url = "https://www.landofbasketball.com/yearbyyear/2024_2025_standings.htm"
+    
+    try:
+        # Fetch the webpage
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        soup = BeautifulSoup(response.text, 'html.parser')
 
+        # Initialize result list
+        standings = []
+
+        # Find the conference tables (Eastern and Western)
+        conference_tables = soup.find_all('table', class_='st')
+        
+        if not conference_tables:
+            return jsonify({"error": "Could not find standings tables on the page"}), 404
+
+        for table in conference_tables:
+            # Extract rows from the table body
+            rows = table.find('tbody').find_all('tr')
+            
+            for row in rows:
+                cols = row.find_all('td')
+                if len(cols) >= 7:  # Ensure there are enough columns
+                    team_data = {
+                        "Team": cols[0].text.strip(),
+                        "W": cols[1].text.strip(),
+                        "L": cols[2].text.strip(),
+                        "Pct": cols[3].text.strip(),
+                        "GB": cols[4].text.strip(),
+                        "Streak": cols[5].text.strip(),
+                        "Last 10 Games": cols[6].text.strip()
+                    }
+                    standings.append(team_data)
+
+        if not standings:
+            return jsonify({"error": "No standings data found"}), 404
+
+        return jsonify(standings)
+
+    except requests.RequestException as e:
+        return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error processing data: {str(e)}"}), 500
 
 @app.route("/api/matchups", methods=["GET"])
 def get_matchups():
@@ -129,8 +168,8 @@ def get_matchups():
     API Endpoint to retrieve all-time head-to-head matchup data between two NBA teams.
     Expects 'team1' and 'team2' as query parameters (e.g., /api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves).
     """
-    team1 = requests.args.get('team1')
-    team2 = requests.args.get('team2')
+    team1 = request.args.get('team1')  # Fixed: Changed requests.args.get to request.args.get
+    team2 = request.args.get('team2')  # Fixed: Changed requests.args.get to request.args.get
 
     if not team1 or not team2:
         return jsonify({"error": "Both team1 and team2 query parameters are required"}), 400
@@ -189,7 +228,7 @@ def get_matchups():
         if not record_section:
             return jsonify({"error": "Could not find head-to-head data on the page"}), 404
 
-        # Extract total games played and wins
+        # Extract total games played
         total_games_text = record_section.find('h2', string=lambda text: 'Total Games Played' in text if text else False)
         if not total_games_text:
             return jsonify({"error": "Could not find total games played data"}), 404
@@ -234,7 +273,6 @@ def get_matchups():
         return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"error": f"Error processing data: {str(e)}"}), 500
-
 
 if __name__ == "__main__":
     app.run(debug=True)
