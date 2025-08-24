@@ -1,29 +1,9 @@
-from flask import Flask, jsonify, render_template_string
-import http.client
+from flask import Flask, jsonify, render_template_string, request
 import json
-from dotenv import load_dotenv
-import os
-
-# Load variables from .env file
-load_dotenv()
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
-
-# Define API headers directly
-# SECURITY WARNING 
-# These are free API strings from RapidAPI 
-# https://rapidapi.com/api-sports/api/api-nba/playground/apiendpoint_f97c89e8-3b1f-4a34-b5b0-79725963b3c8 
-# Placing secrets in plain text to share on github is bad practice 
-# but this is for testing and development purposes and the public api information
-# can be found in the link above. 
-#headers = {
-#    'X-RapidAPI-Key': '2a4ff8e817msh29f1a76b1f56ec9p13eb64jsn5a2da6223d74',
-#    'X-RapidAPI-Host': 'api-nba-v1.p.rapidapi.com'
-#}
-headers = {
-    'X-RapidAPI-Key': os.getenv('PUBLIC_RAPIDAPI_KEY'),
-    'X-RapidAPI-Host': os.getenv('PUBLIC_RAPIDAPI_HOST')
-}
 
 # ASCII art of Neo
 neo_art = """
@@ -80,11 +60,9 @@ template = """
     <pre>{{ neo_art }}</pre>
     <p>Just take the blue pill</p>
     <div class="links">
-        <a href="/api/test">API TEST</a>
-        <a href="/api/teams">API TEAMS</a>
-        <a href="/api/seasons">SEASONS</a>
-        <a href="/api/games">GAMES</a>
+        <a href="/api/teams">TEAMS</a>
         <a href="/api/standings">STANDINGS</a>
+        <a href="/api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves">MATCHUPS TEST</a>
     </div>
 </body>
 </html>
@@ -94,7 +72,7 @@ template = """
 def index():
     return render_template_string(template, neo_art=neo_art)
 
-@app.route("/api/test", methods=["GET"])
+@app.route("/api/teams", methods=["GET"])
 def get_nba_teams():
     """
     API Endpoint to return a list of NBA team IDs, names, and logos in JSON response.
@@ -133,41 +111,168 @@ def get_nba_teams():
     ]
     return jsonify(teams)
 
-@app.route("/api/teams", methods=["GET"])
-def get_teams():
-    conn = http.client.HTTPSConnection("PUBLIC_RAPIDAPI_HOST")
-    conn.request("GET", "/teams", headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    return jsonify(json.loads(data.decode("utf-8")))
-
-@app.route("/api/seasons", methods=["GET"])
-def get_seasons():
-    conn = http.client.HTTPSConnection("PUBLIC_RAPIDAPI_HOST")
-    conn.request("GET", "/seasons", headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    return jsonify(json.loads(data.decode("utf-8")))
-
-@app.route("/api/games", methods=["GET"])
-def get_games():
-    conn = http.client.HTTPSConnection("PUBLIC_RAPIDAPI_HOST")
-    conn.request("GET", "/games?date=2024-12-25", headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    return jsonify(json.loads(data.decode("utf-8")))
-
 @app.route("/api/standings", methods=["GET"])
 def get_standings():
-    conn = http.client.HTTPSConnection("PUBLIC_RAPIDAPI_HOST")
-    conn.request("GET", "/standings?league=standard&season=2024", headers=headers)
-    res = conn.getresponse()
-    data = res.read()
-    conn.close()
-    return jsonify(json.loads(data.decode("utf-8")))
+    """
+    API Endpoint to retrieve 2024-2025 NBA standings from landofbasketball.com.
+    Returns Team, W, L, Pct, GB, Streak, and Last 10 Games for each team.
+    """
+    url = "https://www.landofbasketball.com/yearbyyear/2024_2025_standings.htm"
+    
+    try:
+        # Fetch the webpage
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Initialize result list
+        standings = []
+
+        # Find the conference tables (Eastern and Western)
+        conference_tables = soup.find_all('table', class_='st')
+        
+        if not conference_tables:
+            return jsonify({"error": "Could not find standings tables on the page"}), 404
+
+        for table in conference_tables:
+            # Extract rows from the table body
+            rows = table.find('tbody').find_all('tr')
+            
+            for row in rows:
+                cols = row.find_all('td')
+                if len(cols) >= 7:  # Ensure there are enough columns
+                    team_data = {
+                        "Team": cols[0].text.strip(),
+                        "W": cols[1].text.strip(),
+                        "L": cols[2].text.strip(),
+                        "Pct": cols[3].text.strip(),
+                        "GB": cols[4].text.strip(),
+                        "Streak": cols[5].text.strip(),
+                        "Last 10 Games": cols[6].text.strip()
+                    }
+                    standings.append(team_data)
+
+        if not standings:
+            return jsonify({"error": "No standings data found"}), 404
+
+        return jsonify(standings)
+
+    except requests.RequestException as e:
+        return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error processing data: {str(e)}"}), 500
+
+@app.route("/api/matchups", methods=["GET"])
+def get_matchups():
+    """
+    API Endpoint to retrieve all-time head-to-head matchup data between two NBA teams.
+    Expects 'team1' and 'team2' as query parameters (e.g., /api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves).
+    """
+    team1 = request.args.get('team1')  # Fixed: Changed requests.args.get to request.args.get
+    team2 = request.args.get('team2')  # Fixed: Changed requests.args.get to request.args.get
+
+    if not team1 or not team2:
+        return jsonify({"error": "Both team1 and team2 query parameters are required"}), 400
+
+    # Map team names to URL-friendly format
+    team_map = {
+        "Atlanta Hawks": "hawks",
+        "Boston Celtics": "celtics",
+        "Brooklyn Nets": "nets",
+        "Charlotte Hornets": "hornets",
+        "Chicago Bulls": "bulls",
+        "Cleveland Cavaliers": "cavaliers",
+        "Dallas Mavericks": "mavericks",
+        "Denver Nuggets": "nuggets",
+        "Detroit Pistons": "pistons",
+        "Golden State Warriors": "warriors",
+        "Houston Rockets": "rockets",
+        "Indiana Pacers": "pacers",
+        "Los Angeles Clippers": "clippers",
+        "Los Angeles Lakers": "lakers",
+        "Memphis Grizzlies": "grizzlies",
+        "Miami Heat": "heat",
+        "Milwaukee Bucks": "bucks",
+        "Minnesota Timberwolves": "timberwolves",
+        "New Orleans Pelicans": "pelicans",
+        "New York Knicks": "knicks",
+        "Oklahoma City Thunder": "thunder",
+        "Orlando Magic": "magic",
+        "Philadelphia 76ers": "76ers",
+        "Phoenix Suns": "suns",
+        "Portland Trail Blazers": "trail_blazers",
+        "Sacramento Kings": "kings",
+        "San Antonio Spurs": "spurs",
+        "Toronto Raptors": "raptors",
+        "Utah Jazz": "jazz",
+        "Washington Wizards": "wizards"
+    }
+
+    if team1 not in team_map or team2 not in team_map:
+        return jsonify({"error": "Invalid team name(s). Please use team names from /api/teams."}), 400
+
+    # Construct the URL (e.g., https://www.landofbasketball.com/head_to_head/heat_vs_timberwolves_all_time.htm)
+    team1_slug = team_map[team1]
+    team2_slug = team_map[team2]
+    url = f"https://www.landofbasketball.com/head_to_head/{team1_slug}_vs_{team2_slug}_all_time.htm"
+
+    try:
+        # Fetch the webpage
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Extract the all-time head-to-head record
+        # The record is typically in a section like "All-Time Head To Head"
+        record_section = soup.find('div', class_='cont-wide')
+        if not record_section:
+            return jsonify({"error": "Could not find head-to-head data on the page"}), 404
+
+        # Extract total games played
+        total_games_text = record_section.find('h2', string=lambda text: 'Total Games Played' in text if text else False)
+        if not total_games_text:
+            return jsonify({"error": "Could not find total games played data"}), 404
+
+        total_games = total_games_text.text.strip().split('(')[0].replace('Total Games Played', '').strip()
+
+        # Find the regular season summary
+        regular_season_section = soup.find('h2', string=lambda text: 'NBA Regular Season' in text if text else False)
+        if not regular_season_section:
+            return jsonify({"error": "Could not find regular season data"}), 404
+
+        # Extract wins and losses
+        wins_text = regular_season_section.find_next('p', string=lambda text: 'All-Time Record' in text if text else False)
+        if not wins_text:
+            return jsonify({"error": "Could not find wins/losses data"}), 404
+
+        wins_lines = wins_text.text.strip().split('\n')
+        team1_wins = next((line for line in wins_lines if team1 in line), None)
+        team2_wins = next((line for line in wins_lines if team2 in line), None)
+
+        if not team1_wins or not team2_wins:
+            return jsonify({"error": "Could not parse wins/losses data"}), 404
+
+        team1_wins_count = team1_wins.split()[2]  # e.g., "Miami Heat 36 Wins" -> "36"
+        team2_wins_count = team2_wins.split()[2]  # e.g., "Minnesota Timberwolves 34 Wins" -> "34"
+
+        # Construct response
+        result = {
+            "team1": team1,
+            "team2": team2,
+            "total_games_played": total_games,
+            "regular_season": {
+                f"{team1}_wins": team1_wins_count,
+                f"{team2}_wins": team2_wins_count
+            },
+            "source_url": url
+        }
+
+        return jsonify(result)
+
+    except requests.RequestException as e:
+        return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Error processing data: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
