@@ -10,7 +10,7 @@ export default defineConfig({
     host: true, // Allow access from outside the container
     proxy: {
       "/api": {
-        target: "http://localhost:5000", // your backend port
+        target: "http://localhost:5000",
         changeOrigin: true,
         secure: false,
       },
