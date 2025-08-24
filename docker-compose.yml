@@ -5,6 +5,10 @@ services:
       dockerfile: Dockerfile.frontend
     image: frontend
     container_name: web
+    depends_on: 
+      backend:
+        condition: service_started
+        restart: true
     ports:
       - "3000:3000"
 
