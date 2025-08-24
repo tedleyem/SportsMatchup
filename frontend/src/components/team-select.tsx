@@ -1,36 +1,31 @@
-export function TeamSelect({
+interface TeamSelectProps {
+  label: string;
+  value: string;
+  onChange: (val: string) => void;
+  options: { id: string; name: string; image: string }[];
+}
+
+export const TeamSelect = ({
   label,
   value,
   onChange,
   options,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: { id: string; name: string }[];
-}) {
+}: TeamSelectProps) => {
   return (
-    <div className="flex flex-col space-y-1">
-      <label className="text-sm font-medium text-gray-700">{label}</label>
+    <div className="flex flex-col items-start space-y-2">
+      <label className="text-sm font-semibold">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="
-          block w-full
-          px-4 py-2
-          bg-white border border-gray-300
-          rounded-lg shadow-sm
-          text-gray-800
-          focus:outline-none focus:ring-2 focus:ring-blue-500
-        "
+        className="bg-gray-dark text-white px-4 py-2 rounded-lg"
       >
         <option value="">Select a team</option>
-        {options.map((opt) => (
-          <option key={opt.id} value={opt.id}>
-            {opt.name}
+        {options.map((team) => (
+          <option key={team.id} value={team.id}>
+            {team.name}
           </option>
         ))}
       </select>
     </div>
   );
-}
+};

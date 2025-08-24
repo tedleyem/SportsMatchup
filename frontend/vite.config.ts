@@ -7,6 +7,13 @@ export default defineConfig({
   plugins: [tailwindcss(), react()],
   server: {
     port: 3000, // Ensure Vite's dev server uses port 3000 to match EXPOSE
-    host: true // Allow access from outside the container
+    host: true, // Allow access from outside the container
+    proxy: {
+      "/api": {
+        target: "http://localhost:5000", // your backend port
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

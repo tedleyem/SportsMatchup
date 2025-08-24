@@ -1,18 +1,16 @@
-"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TeamSelect } from "./team-select";
 import { TeamMatchup } from "./TeamMatchup";
 import { RevealBlock } from "./RevealBlock";
 
-export const Versus = () => {
+interface VersusProps {
+  teams: { id: string; name: string; image: string }[];
+}
+
+export const Versus = ({ teams }: VersusProps) => {
   const [teamA, setTeamA] = useState("");
   const [teamB, setTeamB] = useState("");
   const [submitted, setSubmitted] = useState(false);
-
-  const teams2 = [
-    { id: "1", name: "First", image: "/images/team1.png" },
-    { id: "2", name: "Second", image: "/images/team2.png" },
-  ];
 
   const handleSubmit = () => {
     if (teamA && teamB) {
@@ -28,78 +26,61 @@ export const Versus = () => {
   };
 
   return (
-    <div
-      className="flex flex-col w-full min-h-screen bg-black text-white overflow-y-auto"
-      style={{
-        backgroundImage: `url("")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
-    >
-      {/* Selector Block */}
+    <div className="flex flex-col w-full bg-black text-white">
       <div className="flex flex-col items-center py-12 space-y-8">
         <div className="flex flex-row justify-evenly items-center w-full max-w-4xl">
-          {/* Team A */}
-          <div className="w-[30%]">
-            <TeamSelect
-              label="Team A"
-              value={teamA}
-              onChange={setTeamA}
-              options={teams2}
-            />
-          </div>
+          <TeamSelect
+            label="Team A"
+            value={teamA}
+            onChange={setTeamA}
+            options={teams}
+          />
+          <h2 className="text-lg font-bold">VS</h2>
+          <TeamSelect
+            label="Team B"
+            value={teamB}
+            onChange={setTeamB}
+            options={teams}
+          />
+        </div>
 
-          {/* Center Column */}
-          <div className="flex flex-col items-center space-y-2">
-            <h2 className="text-lg font-bold">VS</h2>
-            <button
-              onClick={handleSubmit}
-              disabled={!teamA || !teamB}
-              className={`px-6 py-2 rounded-lg font-semibold transition ${
-                teamA && teamB
-                  ? "bg-orange text-white hover:bg-orange-light"
-                  : "bg-gray-medium hover:bg-gray-dim text-gray-light cursor-not-allowed"
-              }`}
-            >
-              Submit
-            </button>
-            <button
-              onClick={handleReset}
-              className={`text-sm text-gray-light hover:text-white underline transition-opacity duration-300 ${
-                submitted ? "opacity-100 visible" : "opacity-0 invisible"
-              }`}
-            >
-              Reset
-            </button>
-          </div>
-
-          {/* Team B */}
-          <div className="w-[30%]">
-            <TeamSelect
-              label="Team B"
-              value={teamB}
-              onChange={setTeamB}
-              options={teams2}
-            />
-          </div>
+        <div className="flex flex-col items-center space-y-2">
+          <button
+            onClick={handleSubmit}
+            disabled={!teamA || !teamB}
+            className={`px-6 py-2 rounded-lg font-semibold transition ${
+              teamA && teamB
+                ? "bg-orange text-white hover:bg-orange-light"
+                : "bg-gray-medium hover:bg-gray-dim text-gray-light cursor-not-allowed"
+            }`}
+          >
+            Submit
+          </button>
+          <button
+            onClick={handleReset}
+            className={`text-sm text-gray-light hover:text-white underline transition-opacity duration-300 ${
+              submitted ? "opacity-100 visible" : "opacity-0 invisible"
+            }`}
+          >
+            Reset
+          </button>
         </div>
       </div>
 
-      {/* Matchup Reveal Block */}
       <div className="w-full px-4 pb-12">
         <RevealBlock show={submitted}>
           <TeamMatchup
             team1Image={
-              teams2.find((team) => team.id === teamA)?.image ||
+              teams.find((team) => team.id === teamA)?.image ||
               "/images/default.png"
             }
             team2Image={
-              teams2.find((team) => team.id === teamB)?.image ||
+              teams.find((team) => team.id === teamB)?.image ||
               "/images/default.png"
             }
             record={`${
-              teams2.find((team) => team.id === teamA)?.name || "Team A"
-            } vs ${teams2.find((team) => team.id === teamB)?.name || "Team B"}`}
+              teams.find((team) => team.id === teamA)?.name || "Team A"
+            } vs ${teams.find((team) => team.id === teamB)?.name || "Team B"}`}
             statLabels={["PPG", "RPG", "APG", "3P%"]}
             headToHeadTeam1Stats={["101.4", "45.2", "24.1", "36.1%"]}
             headToHeadTeam2Stats={["98.7", "43.5", "22.8", "38.6%"]}
@@ -113,5 +94,4 @@ export const Versus = () => {
     </div>
   );
 };
-
 export default Versus;

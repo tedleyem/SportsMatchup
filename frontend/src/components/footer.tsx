@@ -1,4 +1,5 @@
 "use client";
+import { SOCIALS } from "../constants";
 
 export const Footer = () => {
   return (
@@ -12,6 +13,20 @@ export const Footer = () => {
           <div className="text-[15px] text-center text-gray-400">
             &copy; Ted and Fabian {new Date().getFullYear()} Inc. All rights
             reserved.
+          </div>
+          <div className="mt-2 flex gap-4 items-center">
+            {SOCIALS.map(({ name, icon: Icon, link }) => (
+              <a
+                key={name}
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-white hover:text-orange-light transition"
+                aria-label={name}
+              >
+                <Icon size={22} />
+              </a>
+            ))}
           </div>
         </div>
       </div>

@@ -1,12 +1,7 @@
 import { useState } from "react";
+import MatchupsLogo from "../assets/MatchupsLogo.svg";
 
-// Define NAV_LINKS with proper typing
-interface NavLink {
-  title: string;
-  link: string;
-}
-
-const NAV_LINKS: NavLink[] = [
+const NAV_LINKS = [
   {
     title: "About",
     link: "https://github.com/gitforfabianv/SportsMatchup/blob/main/README.md",
@@ -19,62 +14,66 @@ const NAV_LINKS: NavLink[] = [
   { title: "API", link: "/test" },
 ];
 
-// Navbar props interface
-interface NavbarProps {
-  showApi: boolean;
-  setShowApi: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-export const Navbar = ({ showApi, setShowApi }: NavbarProps) => {
-  const [showNavMenu, setShowNavMenu] = useState<boolean>(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+export const Navbar = ({ showApi, setShowApi }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="w-full h-[65px] sticky top-0 shadow-lg shadow-orange-light/50 bg-black backdrop-blur-md z-50 px-10">
-      <div className="w-full h-full flex items-center justify-between m-auto px-[10px]">
-        {/* Logo + Name */}
+    <div className="w-full sticky top-0 z-50 bg-black shadow-lg shadow-orange-light/50 backdrop-blur-md">
+      <div className="h-[65px] flex items-center justify-between px-4">
+        {/* Logo */}
         <a href="#about-me" className="flex items-center">
           <img
-            src="/basketball.jpg"
+            src={MatchupsLogo}
             alt="Logo"
             width={70}
             height={70}
             draggable={false}
-            className="cursor-pointer"
+            className="cursor-pointer m-2"
           />
-          <div className="hidden md:flex md:font-bold ml-[10px] text-gray-300">
-            NBA Matchups
-          </div>
         </a>
 
-        {/* Web Navbar */}
-        <div className="hidden md:flex w-[500px] h-full flex-row items-center justify-between md:mr-20">
-          <div className="flex items-center justify-between w-full h-auto bg-gray-dark px-4 py-2 rounded-full">
+        {/* Hamburger Icon */}
+        <button
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          className="text-white hover:text-orange-light transition text-2xl"
+          aria-label="Toggle menu"
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Slide-out Menu */}
+      {isMenuOpen && (
+        <div className="absolute right-0 top-[65px] w-64 bg-gray-dark text-white shadow-lg p-4 flex flex-col space-y-4">
+          <ul className="flex flex-col items-end space-y-2">
             {NAV_LINKS.map((link) =>
               link.title === "API Viewer" ? (
-                <button
-                  key={link.title}
-                  onClick={() => {
-                    setShowApi((prev) => !prev); // Wrap in block to return void
-                  }}
-                  className="cursor-pointer text-white hover:text-orange-light transition"
-                >
-                  {showApi ? "Hide API" : "Show API"}
-                </button>
+                <li key={link.title}>
+                  <button
+                    onClick={() => {
+                      setShowApi((prev) => !prev);
+                      setIsMenuOpen(false);
+                    }}
+                    className="hover:text-orange-light transition"
+                  >
+                    {showApi ? "Hide API" : "Show API"}
+                  </button>
+                </li>
               ) : (
-                <a
-                  key={link.title}
-                  href={link.link}
-                  className="cursor-pointer text-white hover:text-orange-light transition"
-                >
-                  {link.title}
-                </a>
+                <li key={link.title}>
+                  <a
+                    href={link.link}
+                    className="hover:text-orange-light transition"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.title}
+                  </a>
+                </li>
               )
             )}
-          </div>
+          </ul>
         </div>
-        <div>SOCIAL LINKS</div>
-      </div>
+      )}
     </div>
   );
 };
