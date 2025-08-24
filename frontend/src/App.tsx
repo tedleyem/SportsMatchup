@@ -9,7 +9,7 @@ function App() {
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    fetch("/api/test")
+    fetch("/api/teams")
       .then((res) => res.json())
       .then((data) => {
         console.log("Fetched teams:", data); // 👈 Check this
