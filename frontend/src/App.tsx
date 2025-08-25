@@ -9,21 +9,32 @@ function App() {
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    fetch("http://backend:5000/api/teams")  // Use service name 'backend'
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP error! Status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Fetched teams:", data);
-        setTeams(data);
-      })
-      .catch((err) => {
-        console.error("Failed to fetch teams:", err.message);
-      });
-  }, []);
+  const fetchTeams = async () => {
+    try {
+      const res = await fetch("http://backend:5000/api/teams");
+      if (!res.ok) throw new Error(`HTTP error! Status: ${res.status}`);
+      const data = await res.json();
+      console.log("Fetched teams:", data);
+      setTeams(data);
+    } catch (err) {
+      console.error("Failed to fetch teams:", err.message);
+    }
+  };
+
+  const retryFetch = async (retries = 3, delay = 1000) => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        await fetchTeams();
+        break;
+      } catch (err) {
+        if (i < retries - 1) await new Promise((res) => setTimeout(res, delay));
+        else throw err;
+      }
+    }
+  };
+
+  retryFetch();
+}, []);
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-black">
