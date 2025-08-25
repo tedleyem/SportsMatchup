@@ -9,6 +9,8 @@ services:
       backend:
         condition: service_started
         restart: true
+    networks:
+      - app-network
     ports:
       - "3000:3000"
 
@@ -18,8 +20,14 @@ services:
       dockerfile: Dockerfile.backend
     image: backend
     container_name: api
-    ports:
-      - "5000:5000"
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development
+    networks:
+      - app-network
+    ports:
+      - "5000:5000"
+
+networks:
+  app-network:
+    driver: bridge
