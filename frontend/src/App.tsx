@@ -9,13 +9,20 @@ function App() {
   const [teams, setTeams] = useState([]);
 
   useEffect(() => {
-    fetch("/api/teams")
-      .then((res) => res.json())
+    fetch("http://backend:5000/api/teams")  // Use service name 'backend'
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => {
-        console.log("Fetched teams:", data); // 👈 Check this
+        console.log("Fetched teams:", data);
         setTeams(data);
       })
-      .catch((err) => console.error("Failed to fetch teams:", err));
+      .catch((err) => {
+        console.error("Failed to fetch teams:", err.message);
+      });
   }, []);
 
   return (
