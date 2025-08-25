@@ -2,8 +2,10 @@ from flask import Flask, jsonify, render_template_string, request
 import json
 import requests
 from bs4 import BeautifulSoup
+from flask_cors import CORS # CORS (Cross-Origin Resource Sharing) issue.
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow all origins for dev
 
 # ASCII art of Neo
 neo_art = """
