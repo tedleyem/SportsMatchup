@@ -23,6 +23,24 @@ neo_art = """
 ⠀⠀⢰⣿⣿⣿⣿⣿⣿⡿⠿⢿⣿⣿⣿⣿⣿⡄⠀⠀
 ⠀⠀⠻⠿⠿⠿⠿⠿⠿⠷⠴⠿⠿⠿⠿⠿⠿⠇⠀⠀
 """
+# ASCII art of Agent Smith
+agent_art = """
+⠀⠀⠀⠀⠀⠀⢀⣤⣶⣶⣶⣶⣦⣤⣀⠀⠀⠀⠀⠀
+⠀⠀⢀⣤⣶⣶⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣦⡀⠀⠀
+⠀⢠⣿⣿⣿⣿⣿⠿⠛⠛⠛⠛⠻⢿⣿⣿⣷⡀⠀
+⠀⢸⣿⡿⠋⠁⠀⠀⠀ⴾⵉⴾ⠀⠀⠀⠈⢹⣿⡇⠀
+⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀|⠀⠀⠀⠀⠀⠀⣿⡇⠀
+⠀⢸⣿⠀⠀⠀⠀⠀⠀⠀|⠀⠀⠀⠀⠀⠀⣿⡇⠀
+⠀⢸⣿⣠⣴⣶⣶⣶⣦⣀⣀⣴⣶⣶⣶⣤⣄⣿⡇⡀
+⣿⣿⣿⠻⣿⣿⣿⣿⣿⠟⠻⣿⣿⣿⣿⣿⠟⣿⣿⣿
+⣿⣿⣿⠀⠈⠉⠛⠋⠉⠀⠀⠉⠙⠛⠉⠁⠀⣿⣿⣿
+⠙⢿⣿⠀⠀⠀⢀⣀⣀⣀⣀⣀⣀⣀⠀⠀⠀⣿⡿⠃
+⠀⠸⣿⣧⠀⠀⠀⠛⠿⠿⠿⠿⠿⠛⠀⠀⣼⣿⠇⠀
+⠀⠀⠙⢿⣷⣄⠀⠰⣿⣿⣿⣿⠆⠀⣠⣾⡿⠃⠀⠀
+⠀⠀⠀⢸⣿⣿⣷⣤⣀⣀⣀⣀⣤⣾⣿⣿⡅⠀⠀⠀
+⠀⠀⢰⣿⣿⣿⣿⣿⣿⡿⠿⢿⣿⣿⣿⣿⣿⡄⠀⠀
+⠀⠀⠻⠿⠿⠿⠿⠿⠿⠷⠴⠿⠿⠿⠿⠿⠿⠇⠀⠀
+"""
 
 # Basic HTML template for the main page
 template = """
@@ -60,9 +78,51 @@ template = """
     <pre>{{ neo_art }}</pre>
     <p>Just take the blue pill</p>
     <div class="links">
+        <a href="/api/test">TEST</a>
         <a href="/api/teams">TEAMS</a>
-        <a href="/api/standings">STANDINGS</a>
-        <a href="/api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves">MATCHUPS TEST</a>
+        <a href="/api/matchups?team1=Miami%20Heat&team2=Minnesota%20Timberwolves">MATCHUPS</a>
+    </div>
+</body>
+</html>
+"""
+
+#Test template 
+test_template = """
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flask Test</title>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin-top: 50px;
+        }
+        pre {
+            display: inline-block;
+            text-align: left;
+        }
+        .links {
+            margin-top: 20px;
+        }
+        .links a {
+            color: #00FF00;
+            margin: 0 15px;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <pre>{{ neo_art }}</pre>
+    <p>This is a test, this is only a test.</p>
+    <div class="links"> 
+        <a href="/">HOME</a>
     </div>
 </body>
 </html>
@@ -71,6 +131,10 @@ template = """
 @app.route('/')
 def index():
     return render_template_string(template, neo_art=neo_art)
+
+@app.route('/api/test')
+def get_test():
+    return render_template_string(test_template, neo_art=agent_art)
 
 @app.route("/api/teams", methods=["GET"])
 def get_nba_teams():
@@ -110,58 +174,7 @@ def get_nba_teams():
         {"id": "WAS", "name": "Washington Wizards", "image": "https://upload.wikimedia.org/wikipedia/en/0/02/Washington_Wizards_logo.svg"},
     ]
     return jsonify(teams)
-
-@app.route("/api/standings", methods=["GET"])
-def get_standings():
-    """
-    API Endpoint to retrieve 2024-2025 NBA standings from landofbasketball.com.
-    Returns Team, W, L, Pct, GB, Streak, and Last 10 Games for each team.
-    """
-    url = "https://www.landofbasketball.com/yearbyyear/2024_2025_standings.htm"
-    
-    try:
-        # Fetch the webpage
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for bad status codes
-        soup = BeautifulSoup(response.text, 'html.parser')
-
-        # Initialize result list
-        standings = []
-
-        # Find the conference tables (Eastern and Western)
-        conference_tables = soup.find_all('table', class_='st')
-        
-        if not conference_tables:
-            return jsonify({"error": "Could not find standings tables on the page"}), 404
-
-        for table in conference_tables:
-            # Extract rows from the table body
-            rows = table.find('tbody').find_all('tr')
-            
-            for row in rows:
-                cols = row.find_all('td')
-                if len(cols) >= 7:  # Ensure there are enough columns
-                    team_data = {
-                        "Team": cols[0].text.strip(),
-                        "W": cols[1].text.strip(),
-                        "L": cols[2].text.strip(),
-                        "Pct": cols[3].text.strip(),
-                        "GB": cols[4].text.strip(),
-                        "Streak": cols[5].text.strip(),
-                        "Last 10 Games": cols[6].text.strip()
-                    }
-                    standings.append(team_data)
-
-        if not standings:
-            return jsonify({"error": "No standings data found"}), 404
-
-        return jsonify(standings)
-
-    except requests.RequestException as e:
-        return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 500
-    except Exception as e:
-        return jsonify({"error": f"Error processing data: {str(e)}"}), 500
-
+  
 @app.route("/api/matchups", methods=["GET"])
 def get_matchups():
     """
@@ -273,6 +286,7 @@ def get_matchups():
         return jsonify({"error": f"Failed to fetch data: {str(e)}"}), 500
     except Exception as e:
         return jsonify({"error": f"Error processing data: {str(e)}"}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
