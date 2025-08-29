@@ -1,4 +1,5 @@
-import { useState, Dispatch, SetStateAction } from "react";
+import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react"; // Use type-only import
 import MatchupsLogo from "../assets/MatchupsLogo.svg";
 
 const NAV_LINKS = [
@@ -53,7 +54,7 @@ export const Navbar = ({ showApi, setShowApi }: NavbarProps) => {
         <div className="absolute right-0 top-[65px] w-64 bg-gray-dark text-white shadow-lg p-4 flex flex-col space-y-4">
           <ul className="flex flex-col items-end space-y-2">
             {NAV_LINKS.map((link) =>
-              link.title === "API" ? ( // Updated to match "API" title
+              link.title === "API" ? (
                 <li key={link.title}>
                   <button
                     onClick={() => {
