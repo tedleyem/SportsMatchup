@@ -16,8 +16,8 @@ function App() {
       const data = await res.json();
       console.log("Fetched teams:", data);
       setTeams(data);
-    } catch (err) {
-      console.error("Failed to fetch teams:", err.message);
+    } catch (err: Error) {
+      console.log("Failed to fetch teams:", err.message);
     }
   };
 
