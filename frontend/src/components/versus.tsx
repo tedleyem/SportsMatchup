@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { TeamSelect } from "./team-select";
 import { TeamMatchup } from "./TeamMatchup";
 import { RevealBlock } from "./RevealBlock";
