@@ -51,7 +51,7 @@ export const Navbar = ({ showApi, setShowApi }) => {
                 <li key={link.title}>
                   <button
                     onClick={() => {
-                      setShowApi((prev) => !prev);
+                      setShowApi((prev: boolean) => !prev);
                       setIsMenuOpen(false);
                     }}
                     className="hover:text-orange-light transition"
