@@ -3,39 +3,39 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - main
   pull_request:
     branches:
-      - main  # Optional: Run on pull requests to main
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository code
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Compatible with Vite 7.1.2
+          node-version: '20'
 
-      # Install dependencies in the frontend directory
       - name: Install Dependencies
         run: cd frontend && npm install
 
-      # Build the project in the frontend directory
       - name: Build
         run: cd frontend && npm run build
 
-      # Deploy to GitHub Pages
+      # Optional: Move dist to docs folder for GitHub Pages
+      - name: Prepare Docs Folder
+        run: |
+          mkdir -p docs
+          cp -r frontend/dist/* docs/
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v4
-        if: github.event_name == 'push'  # Only deploy on push, not PRs
+        if: github.event_name == 'push'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./frontend/dist  # Deploy the dist folder from frontend
-          
+          publish_dir: ./docs  # Deploy the docs folder
