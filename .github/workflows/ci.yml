@@ -33,7 +33,7 @@ jobs:
           rm -rf node_modules package-lock.json
           npm install
           npm run build
-          ls -la build/  # Debug: Verify build directory contents
+          ls -la dist/  # Debug: Verify build directory contents
 
       - name: Upload build output
         uses: actions/upload-pages-artifact@v3
