@@ -6,7 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 
 // ⚠️ IMPORTANT: Replace 'YOUR_REPO_NAME' with the actual name of your GitHub repository.
 // For example, if your repo URL is github.com/username/SportsMatchup, use '/SportsMatchup/'
-const BASE_PATH = "/SportsMatchups/"; 
+const BASE_PATH = "/SportsMatchup/"; 
 
 export default defineConfig({
     // 👇 ADD THE 'base' OPTION HERE FOR GITHUB PAGES DEPLOYMENT
