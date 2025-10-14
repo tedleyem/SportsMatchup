@@ -64,7 +64,7 @@ export const Versus = ({ teams: propTeams = [] }: VersusProps) => {
       return;
     }
 
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: number | undefined; // 'number' is the browser standard
 
     const fetchTeams = async () => {
       try {
